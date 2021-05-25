@@ -5,15 +5,14 @@ function WalletException(message, e) {
   this.exception = e;
 }
 
-export async function localSetupWallet() {
-
+export async function localSetupWallet(productionEvironment = false) {
   let wallet = null;
   let walletDetails = window.localStorage.getItem("wallet");
   if (walletDetails) {
     wallet = JSON.parse(walletDetails);
   }
 
-  let wallet_and_accounts = await setupWallet(wallet);
+  let wallet_and_accounts = await setupWallet(wallet, productionEvironment);
 
   if (wallet_and_accounts) {
     window.localStorage.setItem(

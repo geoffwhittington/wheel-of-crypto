@@ -8,34 +8,32 @@ import Grid from "@material-ui/core/Grid";
 import WheelComponent from "react-wheel-of-prizes";
 import "react-wheel-of-prizes/dist/index.css";
 import KinLogo from "./kin-logo.png";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
 
 function App() {
-  const [paymentReceived, setPaymentReceived] = useState(false);
-  const [paymentSuccess, setPaymentSucess] = useState(false);
   const [walletAccounts, setWalletAccounts] = useState(null);
+  const [message, setMessage] = useState("");
+
+  const { REACT_APP_NETWORK } = process.env;
+
+  let PRODUCTION = REACT_APP_NETWORK === "prod";
 
   useEffect(() => {
     const setupWallet = async () => {
-      let wa = await localSetupWallet();
+      let wa = await localSetupWallet(PRODUCTION);
       setWalletAccounts(wa);
     };
     return setupWallet();
   }, []);
 
   const segments = [
-    "better luck next time",
-    "won 70",
-    "won 10",
-    "better luck next time",
-    "won 2",
-    "won uber pass",
-    "better luck next time",
-    "won a voucher",
+    "Just Hodl it.",
+    "no keys, no crypto",
+    "kin @ 1 penny",
+    "vitalik impress",
+    "don't bet against SBF",
+    "crypto has no top because the $ has no bottom",
+    "The only plan is there is no plan",
+    "It ain't much, but its honest work",
   ];
   const segColors = [
     "#EE4040",
@@ -49,12 +47,13 @@ function App() {
   ];
   const onFinished = (winner) => {
     console.log(winner);
+    setMessage(winner);
     const payForSpin = async () => {
       let walletAccounts = await localSetupWallet();
       await submitPayment(
         walletAccounts.wallet,
         "Don8L4DTVrUrRAcVTsFoCRqei5Mokde3CV3K9Ut4nAGZ",
-        "1",
+        "10",
         "WHEELOFCRYPTO",
         onPaymentSend,
         onPaymentEnd,
@@ -64,13 +63,8 @@ function App() {
     payForSpin();
   };
 
-  const onPaymentSend = async () => {
-    setPaymentReceived(false);
-  };
+  const onPaymentSend = async () => {};
   const onPaymentEnd = async (paymentResult) => {
-    setPaymentReceived(true);
-    setPaymentSucess(paymentResult.success);
-
     if (paymentResult.success) {
       await onAccountUpdate({
         wallet: paymentResult.wallet,
@@ -98,6 +92,7 @@ function App() {
           direction="row"
           justify="space-between"
           alignItems="flex-start"
+          spacing={4}
         >
           <Grid
             item
@@ -111,30 +106,47 @@ function App() {
             </Typography>
             <p></p>
             <Typography variant="h4" component="h2">
-              Spin the Wheel for today's crypto wisdom. Each spin is only 1 Kin.
+              Spin the wheel for some crypto wisdom. Each spin is only 10 Kin.
             </Typography>
           </Grid>
           <Grid item xs={3}>
             <img src={KinLogo} height="40em" alt="KIN" />
             <Typography variant="body" color="textSecondary" component="p">
-              <a href="https://kin.org/">KIN</a> is one of the fastest and most
-              used cryptocurrencies.
+              <a href="https://kin.org/">Unify your apps</a>
             </Typography>
           </Grid>
           <Grid item xs={6}>
-            <WheelComponent
-              segments={segments}
-              segColors={segColors}
-              onFinished={(winner) => onFinished(winner)}
-              primaryColor="black"
-              contrastColor="white"
-              buttonText="1 Kin"
-              isOnlyOnce={false}
-              size={200}
-              upDuration={100}
-              downDuration={10}
-              style={{ paddingBottom: "0px" }}
-            />
+            <p>
+              {message && (
+                <Typography variant="h5" component="h5">
+                  "{message}"
+                </Typography>
+              )}
+            </p>
+            {walletAccounts && walletAccounts.tokenAccounts[0].balance < 10 && (
+              <>
+                Deposit 10 Kin to{" "}
+                <strong>{walletAccounts.wallet.publicKey}</strong> in order to
+                spin. No refunds. Earn more Kin at{" "}
+                <a href="https://Perk.exchange" target="_other">Perk.Exchange</a>
+              </>
+            )}
+            {walletAccounts &&
+              walletAccounts.tokenAccounts[0].balance >= 10 && (
+                <WheelComponent
+                  segments={segments}
+                  segColors={segColors}
+                  onFinished={(winner) => onFinished(winner)}
+                  primaryColor="black"
+                  contrastColor="white"
+                  buttonText="10 Kin"
+                  isOnlyOnce={false}
+                  size={200}
+                  upDuration={100}
+                  downDuration={10}
+                  style={{ paddingBottom: "0px" }}
+                />
+              )}
           </Grid>
           <Grid item xs={3}>
             {walletAccounts && (
@@ -152,22 +164,22 @@ function App() {
           </Grid>
         </Grid>
       </Container>
-
-      <hr />
-      <strong>Payment</strong>
-      {paymentReceived && <>Received payment!</>}
-      {paymentReceived && paymentSuccess && <>Payment success!</>}
-
-      <p>
-        <Button
-          variant="contained"
-          onClick={async () => {
-            await requestAirdrop(walletAccounts.wallet, "2", onAccountUpdate);
-          }}
-        >
-          Airdrop
-        </Button>
-      </p>
+      {!PRODUCTION && (
+        <p>
+          <Button
+            variant="contained"
+            onClick={async () => {
+              await requestAirdrop(
+                walletAccounts.wallet,
+                "10",
+                onAccountUpdate
+              );
+            }}
+          >
+            Airdrop
+          </Button>
+        </p>
+      )}
     </div>
   );
 }
