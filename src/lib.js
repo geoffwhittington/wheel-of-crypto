@@ -5,14 +5,14 @@ function WalletException(message, e) {
   this.exception = e;
 }
 
-export async function localSetupWallet(productionEvironment = false) {
+export async function localSetupWallet(productionEnvironment = false) {
   let wallet = null;
   let walletDetails = window.localStorage.getItem("wallet");
   if (walletDetails) {
     wallet = JSON.parse(walletDetails);
   }
 
-  let wallet_and_accounts = await setupWallet(wallet, productionEvironment);
+  let wallet_and_accounts = await setupWallet(wallet, productionEnvironment);
 
   if (wallet_and_accounts) {
     window.localStorage.setItem(
@@ -23,12 +23,12 @@ export async function localSetupWallet(productionEvironment = false) {
   }
 }
 
-export async function setupWallet(walletDetails, productionEvironment = false) {
+export async function setupWallet(walletDetails, productionEnvironment = false) {
   if (walletDetails) {
     let wallet = createWallet("import", walletDetails);
     let tokenAccounts = await resolveTokenAccounts(
       wallet,
-      productionEvironment
+      productionEnvironment
     );
 
     return {
@@ -39,11 +39,11 @@ export async function setupWallet(walletDetails, productionEvironment = false) {
     let wallet = createWallet("create", {});
 
     // create account
-    await createAccount(wallet, productionEvironment);
+    await createAccount(wallet, productionEnvironment);
 
     let tokenAccounts = await resolveTokenAccounts(
       wallet,
-      productionEvironment
+      productionEnvironment
     );
 
     return {
@@ -123,10 +123,10 @@ export async function submitPayment(
   memo,
   onPaymentSubmitCallback,
   onPaymentEndCallback,
-  productionEvironment = false
+  productionEnvironment = false
 ) {
   onPaymentSubmitCallback();
-  var client = new KinClient(productionEvironment ? KinProd : KinTest);
+  var client = new KinClient(productionEnvironment ? KinProd : KinTest);
   try {
     const [result, e] = await client.submitPayment({
       secret: wallet.secret,
@@ -140,7 +140,7 @@ export async function submitPayment(
     } else {
       let tokenAccounts = await resolveTokenAccounts(
         wallet,
-        productionEvironment
+        productionEnvironment
       );
       onPaymentEndCallback({
         success: true,

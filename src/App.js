@@ -32,7 +32,7 @@ function App() {
     "vitalik impress",
     "don't bet against SBF",
     "crypto has no top because the $ has no bottom",
-    "The only plan is there is no plan",
+    "⚗️ The only plan is there is no plan",
     "It ain't much, but its honest work",
   ];
   const segColors = [
@@ -49,15 +49,15 @@ function App() {
     console.log(winner);
     setMessage(winner);
     const payForSpin = async () => {
-      let walletAccounts = await localSetupWallet();
+      let walletAccounts = await localSetupWallet(PRODUCTION);
       await submitPayment(
         walletAccounts.wallet,
-        "Don8L4DTVrUrRAcVTsFoCRqei5Mokde3CV3K9Ut4nAGZ",
+        "HRvm9jcMtebUxBuX57f5zqDgSBTEBySggoiFGb7cMmUq",
         "10",
         "WHEELOFCRYPTO",
         onPaymentSend,
         onPaymentEnd,
-        false
+        PRODUCTION
       );
     };
     payForSpin();
@@ -79,29 +79,17 @@ function App() {
 
   */
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Container maxWidth={false}>
+    <div>
+      <Container>
         <Grid
           container
           direction="row"
-          justify="space-between"
+          justify="center"
           alignItems="flex-start"
-          spacing={4}
+          spacing={1}
         >
-          <Grid
-            item
-            xs={12}
-            style={{
-              textAlign: "center",
-            }}
-          >
-            <Typography variant="h2" component="h2">
+          <Grid item xs={12}>
+            <Typography variant="h3" component="h3">
               Do Your Own Research (DYOR)
             </Typography>
             <p></p>
@@ -109,26 +97,20 @@ function App() {
               Spin the wheel for some crypto wisdom. Each spin is only 10 Kin.
             </Typography>
           </Grid>
-          <Grid item xs={3}>
-            <img src={KinLogo} height="40em" alt="KIN" />
-            <Typography variant="body" color="textSecondary" component="p">
-              <a href="https://kin.org/">Unify your apps</a>
-            </Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <p>
-              {message && (
-                <Typography variant="h5" component="h5">
-                  "{message}"
-                </Typography>
-              )}
-            </p>
+          <Grid item xs={12}>
+            {message && (
+              <Typography variant="h5" component="h5">
+                "{message}"
+              </Typography>
+            )}
             {walletAccounts && walletAccounts.tokenAccounts[0].balance < 10 && (
               <>
                 Deposit 10 Kin to{" "}
                 <strong>{walletAccounts.wallet.publicKey}</strong> in order to
                 spin. No refunds. Earn more Kin at{" "}
-                <a href="https://Perk.exchange" target="_other">Perk.Exchange</a>
+                <a href="https://Perk.exchange" target="_other">
+                  Perk.Exchange
+                </a>
               </>
             )}
             {walletAccounts &&
@@ -141,26 +123,34 @@ function App() {
                   contrastColor="white"
                   buttonText="10 Kin"
                   isOnlyOnce={false}
-                  size={200}
+                  size={180}
                   upDuration={100}
                   downDuration={10}
                   style={{ paddingBottom: "0px" }}
                 />
               )}
           </Grid>
-          <Grid item xs={3}>
-            {walletAccounts && (
-              <>
-                <p>
-                  <strong>Wallet address:</strong>{" "}
-                  {walletAccounts.wallet.publicKey}
-                </p>
-                <p>
-                  <strong>Wallet balance:</strong>{" "}
-                  {walletAccounts.tokenAccounts[0].balance}
-                </p>
-              </>
-            )}
+          {walletAccounts && walletAccounts.wallet && (
+            <Grid item xs={12}>
+              {walletAccounts && (
+                <>
+                  <p>
+                    <strong>KIN wallet address:</strong>{" "}
+                    {walletAccounts.wallet.publicKey}
+                  </p>
+                  <p>
+                    <strong>KIN balance:</strong>{" "}
+                    {walletAccounts.tokenAccounts[0].balance}
+                  </p>
+                </>
+              )}
+            </Grid>
+          )}
+          <Grid item xs={12}>
+            <img src={KinLogo} height="40em" alt="KIN" />
+            <Typography variant="body" color="textSecondary" component="p">
+              <a href="https://kin.org/">Money for the digital world</a>
+            </Typography>
           </Grid>
         </Grid>
       </Container>
